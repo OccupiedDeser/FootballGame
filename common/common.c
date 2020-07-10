@@ -72,5 +72,6 @@ char *get_conf_value(const char *path, const char *key) {
     if (sub == NULL) {
         return NULL;
     }
+
     return conf_ans;
 }

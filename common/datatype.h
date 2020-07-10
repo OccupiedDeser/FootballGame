@@ -15,25 +15,25 @@ struct Score {
     int red;
     int blue;
 };
-struct Bpoint{
+struct Bpoint {
     double x;
     double y;
 };
 
-struct Speed{
+struct Speed {
     double x;
     double y;
 };
 
-struct Aspeed{
+struct Aspeed {
     double x;
     double y;
 };
 
-struct BallStatus{
+struct BallStatus {
     struct Speed v;
     struct Aspeed a;
-    int who;//which队伍
+    int who; //which队伍
     char name[20];
 };
 
@@ -45,20 +45,19 @@ struct User {
     int team; // 0 RED  1 BLUE
     int fd; //该玩家对应的连接
     char name[20];
-    int online;// 1 在线 0 不在线
+    int online; // 1 在线 0 不在线
     int flag; //未响应次数
     struct Point loc;
 };
 
-
 //登录相关的
-struct  LogRequest {
+struct LogRequest {
     char name[20];
     int team;
     char msg[512];
 };
 
-struct LogResponse{
+struct LogResponse {
     int type; // 0 OK 1 NO
     char msg[512];
 };
@@ -87,8 +86,8 @@ struct Ctl {
 #define FT_GAMEOVER 0x80 //gameover
 #define FT_FIN 0x100 //离场
 
-struct FootBallMsg{
-    int type;  // type & FT_HEART
+struct FootBallMsg {
+    int type; // type & FT_HEART
     int size;
     int team;
     char name[20];
@@ -96,8 +95,21 @@ struct FootBallMsg{
     struct Ctl ctl;
 };
 
+#define CHAT_FIN 0x01 //断开
+#define CHAT_HEART 0x02
+#define CHAT_ACK 0x04
+#define CHAT_WALL 0x08 //公聊
+#define CHAT_MSG 0x10 //私聊
+#define CHAT_FUNC 0x20 //功能
+#define CHAT_SYS 0x40 //系统通知信息
 
-struct Map{
+struct ChatMsg {
+    int type;
+    char name[20];
+    char msg[1024];
+};
+
+struct Map {
     int width;
     int height;
     struct Point start;
