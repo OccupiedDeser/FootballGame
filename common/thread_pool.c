@@ -7,30 +7,36 @@
 
 #include "head.h"
 extern int repollfd, bepollfd;
-extern struct User* rteam;
-extern struct User* bteam;
+extern struct User *rteam;
+extern struct User *bteam;
 extern pthread_mutex_t bmutex, rmutex;
 
-void send_all(struct ChatMsg* msg)
+void send_all(struct ChatMsg *msg)
 {
-    for (int i = 0; i < MAX; i++) {
-        if (bteam[i].online) {
-            send(bteam[i].fd, (void*)msg, sizeof(struct ChatMsg), 0);
+    for (int i = 0; i < MAX; i++)
+    {
+        if (bteam[i].online)
+        {
+            send(bteam[i].fd, (void *)msg, sizeof(struct ChatMsg), 0);
         }
-        if (rteam[i].online) {
-            send(rteam[i].fd, (void*)msg, sizeof(struct ChatMsg), 0);
+        if (rteam[i].online)
+        {
+            send(rteam[i].fd, (void *)msg, sizeof(struct ChatMsg), 0);
         }
     }
 }
 
-int send_to(char* to, struct ChatMsg* msg, int fd)
+int send_to(char *to, struct ChatMsg *msg, int fd)
 {
-    for (int i = 0; i < MAX; i++) {
-        if (rteam[i].online && (!strcmp(to, rteam[i].name))) {
+    for (int i = 0; i < MAX; i++)
+    {
+        if (rteam[i].online && (!strcmp(to, rteam[i].name)))
+        {
             send(rteam[i].fd, msg, sizeof(struct ChatMsg), 0);
             return 0;
         }
-        if (bteam[i].online && (!strcmp(to, bteam[i].name))) {
+        if (bteam[i].online && (!strcmp(to, bteam[i].name)))
+        {
             send(bteam[i].fd, msg, sizeof(struct ChatMsg), 0);
             return 0;
         }
@@ -38,95 +44,149 @@ int send_to(char* to, struct ChatMsg* msg, int fd)
     return -1;
 }
 
-void do_work(struct User* user)
+void do_work(struct User *user)
 {
     struct ChatMsg msg, re_msg;
-    recv(user->fd, (void*)&msg, sizeof(msg), 0);
-    if (msg.type & CHAT_WALL) {
+    recv(user->fd, (void *)&msg, sizeof(msg), 0);
+    if (msg.type & CHAT_WALL)
+    {
         msg.type = CHAT_WALL;
         strcpy(msg.name, user->name);
         printf("<%s> ~ %s\n", user->name, msg.msg);
         send_all(&msg);
-    } else if (msg.type & CHAT_MSG) {
-        char to[20] = { 0 };
+    }
+    else if (msg.type & CHAT_MSG)
+    {
+        char to[20] = {0};
         int i = 1;
-        for (; i <= 21; i++) {
-            if (msg.msg[i] == ' ') {
+        for (; i <= 21; i++)
+        {
+            if (msg.msg[i] == ' ')
+            {
                 break;
             }
         }
-        if (msg.msg[i] != ' ' || msg.msg[0] != '@') {
+        if (msg.msg[i] != ' ' || msg.msg[0] != '@')
+        {
             memset(&re_msg, 0, sizeof(re_msg));
             re_msg.type = CHAT_SYS;
             strcpy(re_msg.msg, "私聊格式错误！\n");
-            send(user->fd, (void*)&re_msg, sizeof(re_msg), 0);
-        } else {
+            send(user->fd, (void *)&re_msg, sizeof(re_msg), 0);
+        }
+        else
+        {
             printf("<%s> $ %s\n", user->name, msg.msg);
             msg.type = CHAT_MSG;
             strcpy(msg.name, user->name);
             strncpy(to, msg.msg + 1, i - 1);
-            if (send_to(to, &msg, user->fd) < 0) {
+            if (send_to(to, &msg, user->fd) < 0)
+            {
                 msg.type = CHAT_SYS;
                 bzero(msg.msg, sizeof(msg.msg));
                 strcpy(msg.msg, "用户不存在或已下线！\n");
                 send(user->fd, &msg, sizeof(msg), 0);
             }
         }
-    } else if (msg.type & CHAT_FIN) {
+    }
+    else if (msg.type & CHAT_FIN)
+    {
         bzero(msg.msg, sizeof(msg.msg));
         msg.type = CHAT_SYS;
         sprintf(msg.msg, "注意：我们的好朋友 %s 已下线！\n", user->name);
         strcpy(msg.name, user->name);
         send_all(&msg);
-        if (user->team) {
+        if (user->team)
+        {
             pthread_mutex_lock(&bmutex);
-        } else {
+        }
+        else
+        {
             pthread_mutex_lock(&rmutex);
         }
         user->online = 0;
         int epollfd = user->team ? bepollfd : repollfd;
         del_event(epollfd, user->fd);
-        if (user->team) {
+        if (user->team)
+        {
             pthread_mutex_unlock(&bmutex);
-        } else {
+        }
+        else
+        {
             pthread_mutex_unlock(&rmutex);
         }
         printf(GREEN "Server Info" NONE " : %s logout!\n", user->name);
         close(user->fd);
-    } else if (msg.type & CHAT_FUNC) {
-        bzero(&msg, sizeof(msg));
-        msg.type = CHAT_SYS;
-        strcat(msg.msg, "\n");
-        for (int i = 0; i < MAX; i++) {
-            if (rteam[i].online) {
-                strcat(msg.msg, rteam[i].name);
-                strcat(msg.msg, "\n");
+    }
+    else if (msg.type & CHAT_FUNC)
+    {
+        if (msg.msg[1] == '1')
+        {
+            int sum = 0;
+            char buff[512] = {0};
+            bzero(&msg, sizeof(msg));
+            msg.type = CHAT_SYS;
+            strcat(msg.msg, "\n");
+            for (int i = 0; i < MAX; i++)
+            {
+                if (rteam[i].online)
+                {
+                    strcat(msg.msg, rteam[i].name);
+                    strcat(msg.msg, "\n");
+                    sum++;
+                }
+                if (bteam[i].online)
+                {
+                    strcat(msg.msg, bteam[i].name);
+                    strcat(msg.msg, "\n");
+                    sum++;
+                }
             }
-            if (bteam[i].online) {
-                strcat(msg.msg, bteam[i].name);
-                strcat(msg.msg, "\n");
-            }
+            sprintf(buff, "在线人数为 %d 人", sum);
+            strcat(msg.msg, buff);
+            send(user->fd, (void *)&msg, sizeof(msg), 0);
         }
-        send(user->fd, (void*)&msg, sizeof(msg), 0);
+        else if (msg.msg[1] == '3')
+        {
+            char to[20] = {0};
+            memset(&re_msg, 0, sizeof(re_msg));
+            re_msg.type = CHAT_WALL; 
+            strncpy(to, msg.msg + 3, 20);
+            sprintf(re_msg.msg, L_YELLOW"%s"NONE" 给 "L_PINK"%s"NONE" 倒了一杯"YELLOW"卡布奇诺"NONE" ☕ ", user->name, to);
+            printf("<%s> ~ %s\n", user->name, re_msg.msg);
+            strncpy(re_msg.name, user->name, 20);
+            send_all(&re_msg);
+        }
+        else if(msg.msg[1] == '4')
+        {
+            char to[20] = {0};
+            memset(&re_msg, 0, sizeof(re_msg));
+            re_msg.type = CHAT_WALL; 
+            strncpy(to, msg.msg + 3, 20);
+            sprintf(re_msg.msg, L_YELLOW"%s"NONE" 给 "L_PINK"%s"NONE" 送了 🌹🌹🌹 ", user->name, to);
+            printf("<%s> ~ %s\n", user->name, re_msg.msg);
+            strncpy(re_msg.name, user->name, 20);
+            send_all(&re_msg);
+        }
     }
 }
 
-void task_queue_init(struct task_queue* taskQueue, int sum, int epollfd)
+void task_queue_init(struct task_queue *taskQueue, int sum, int epollfd)
 {
     taskQueue->sum = sum;
     taskQueue->epollfd = epollfd;
-    taskQueue->team = calloc(sum, sizeof(void*));
+    taskQueue->team = calloc(sum, sizeof(void *));
     taskQueue->head = taskQueue->tail = 0;
     pthread_mutex_init(&taskQueue->mutex, NULL);
     pthread_cond_init(&taskQueue->cond, NULL);
 }
 
-void task_queue_push(struct task_queue* taskQueue, struct User* user)
+void task_queue_push(struct task_queue *taskQueue, struct User *user)
 {
     pthread_mutex_lock(&taskQueue->mutex);
     taskQueue->team[taskQueue->tail] = user;
     DBG(L_GREEN "Thread Pool" NONE " : Task push %s\n", user->name);
-    if (++taskQueue->tail == taskQueue->sum) {
+    if (++taskQueue->tail == taskQueue->sum)
+    {
         DBG(L_GREEN "Thread Pool" NONE " : Task Queue End\n");
         taskQueue->tail = 0;
     }
@@ -134,16 +194,18 @@ void task_queue_push(struct task_queue* taskQueue, struct User* user)
     pthread_mutex_unlock(&taskQueue->mutex);
 }
 
-struct User* task_queue_pop(struct task_queue* taskQueue)
+struct User *task_queue_pop(struct task_queue *taskQueue)
 {
     pthread_mutex_lock(&taskQueue->mutex);
-    while (taskQueue->tail == taskQueue->head) {
+    while (taskQueue->tail == taskQueue->head)
+    {
         DBG(L_GREEN "Thread Pool" NONE " : Task Queue Empty, Waiting For Task\n");
         pthread_cond_wait(&taskQueue->cond, &taskQueue->mutex);
     }
-    struct User* user = taskQueue->team[taskQueue->head];
+    struct User *user = taskQueue->team[taskQueue->head];
     DBG(L_GREEN "Thread Pool" NONE " : Task Pop %s\n", user->name);
-    if (++taskQueue->head == taskQueue->sum) {
+    if (++taskQueue->head == taskQueue->sum)
+    {
         DBG(L_GREEN "Thread Pool" NONE " : Task Queue End\n");
         taskQueue->head = 0;
     }
@@ -151,12 +213,13 @@ struct User* task_queue_pop(struct task_queue* taskQueue)
     return user;
 }
 
-void* thread_run(void* arg)
+void *thread_run(void *arg)
 {
     pthread_detach(pthread_self());
-    struct task_queue* taskQueue = (struct task_queue*)arg;
-    while (1) {
-        struct User* user = task_queue_pop(taskQueue);
+    struct task_queue *taskQueue = (struct task_queue *)arg;
+    while (1)
+    {
+        struct User *user = task_queue_pop(taskQueue);
         do_work(user);
     }
 }
