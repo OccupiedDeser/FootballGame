@@ -1,3 +1,10 @@
+/**************************************************************** 
+    > Author: KovZhu
+    > e-Mail: kovzhu@qq.com
+    > Date: 2020-07-11 Sat 10:21:58
+    > LastEditors: KovZhu
+    > LastEditTime: 2020-07-11 Sat 10:38:56
+ ****************************************************************/
 /*************************************************************************
 	> File Name: head.h
 	> Author: suyelu 
@@ -35,6 +42,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/epoll.h>
+#include <locale.h>
+#include <ncurses.h>
 #include "color.h"
 #include "store_score.h"
 #include "common.h"
@@ -44,4 +53,7 @@
 #include "thread_pool.h"
 #include "sub_reactor.h"
 #include "udp_epoll.h"
+#include "chat_ui.h"
+#include "send_chat.h"
+
 #endif
