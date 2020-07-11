@@ -19,7 +19,7 @@ void logout(int signum)
     struct ChatMsg msg;
     msg.type = CHAT_FIN;
     send_all(&msg);
-    DBG(RED "\nBye Bye!");
+    DBG(RED "\nBye Bye!"NONE);
     exit(0);
 }
 
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
                 struct ChatMsg login_msg;
                 bzero(&login_msg, sizeof(login_msg));
                 login_msg.type = CHAT_SYS;
-                sprintf(login_msg.msg, "你的好友 %s 已上线，快打个招呼吧！\n", user.name);
+                sprintf(login_msg.msg, YELLOW" %s "NONE"已上线\n", user.name);
                 send_all(&login_msg);
                 if (new_fd > 0) {
                     add_to_sub_reactor(&user);

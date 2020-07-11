@@ -4,7 +4,7 @@
     > e-Mail: kovzhu@qq.com
     > Date: 2020-07-08 Wed 15:14:28
     > LastEditors: KovZhu
-    > LastEditTime: 2020-07-11 Sat 10:10:44
+    > LastEditTime: 2020-07-11 Sat 13:00:45
  ****************************************************************/
 
 #include "head.h"
@@ -23,7 +23,7 @@ void logout(int signum)
     msg.type = CHAT_FIN;
     send(sockfd, (void*)&msg, sizeof(msg), 0);
     close(sockfd);
-    DBG(RED "\nBye Bye!");
+    DBG(L_GREEN"\nBye Bye!"NONE);
     exit(0);
 }
 

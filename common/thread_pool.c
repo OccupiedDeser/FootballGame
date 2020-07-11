@@ -92,7 +92,7 @@ void do_work(struct User *user)
     {
         bzero(msg.msg, sizeof(msg.msg));
         msg.type = CHAT_SYS;
-        sprintf(msg.msg, "注意：我们的好朋友 %s 已下线！\n", user->name);
+        sprintf(msg.msg, "注意: " L_GREEN "%s" NONE " 已下线！\n", user->name);
         strcpy(msg.name, user->name);
         send_all(&msg);
         if (user->team)
@@ -141,7 +141,7 @@ void do_work(struct User *user)
                     sum++;
                 }
             }
-            sprintf(buff, "在线人数为 %d 人", sum);
+            sprintf(buff, "在线人数为" L_YELLOW " %d " NONE "人", sum);
             strcat(msg.msg, buff);
             send(user->fd, (void *)&msg, sizeof(msg), 0);
         }
@@ -149,20 +149,34 @@ void do_work(struct User *user)
         {
             char to[20] = {0};
             memset(&re_msg, 0, sizeof(re_msg));
-            re_msg.type = CHAT_WALL; 
+            re_msg.type = CHAT_WALL;
             strncpy(to, msg.msg + 3, 20);
-            sprintf(re_msg.msg, L_YELLOW"%s"NONE" 给 "L_PINK"%s"NONE" 倒了一杯"YELLOW"卡布奇诺"NONE" ☕ ", user->name, to);
+            if (strcmp(to, "\0") == 0)
+            {
+                sprintf(re_msg.msg, L_YELLOW "%s" NONE " 给 " L_PINK "大家" NONE " 倒了一杯" YELLOW "卡布奇诺" NONE " ☕ ", user->name);
+            }
+            else
+            {
+                sprintf(re_msg.msg, L_YELLOW "%s" NONE " 给 " L_PINK "%s" NONE " 倒了一杯" YELLOW "卡布奇诺" NONE " ☕ ", user->name, to);
+            }
             printf("<%s> ~ %s\n", user->name, re_msg.msg);
             strncpy(re_msg.name, user->name, 20);
             send_all(&re_msg);
         }
-        else if(msg.msg[1] == '4')
+        else if (msg.msg[1] == '4')
         {
             char to[20] = {0};
             memset(&re_msg, 0, sizeof(re_msg));
-            re_msg.type = CHAT_WALL; 
+            re_msg.type = CHAT_WALL;
             strncpy(to, msg.msg + 3, 20);
-            sprintf(re_msg.msg, L_YELLOW"%s"NONE" 给 "L_PINK"%s"NONE" 送了 🌹🌹🌹 ", user->name, to);
+            if (strcmp(to, "\0") == 0)
+            {
+                sprintf(re_msg.msg, L_YELLOW "%s" NONE " 给 " L_PINK "大家" NONE " 送了 🌹🌹🌹 ", user->name);
+            }
+            else
+            {
+                sprintf(re_msg.msg, L_YELLOW "%s" NONE " 给 " L_PINK "%s" NONE " 送了 🌹🌹🌹 ", user->name, to);
+            }
             printf("<%s> ~ %s\n", user->name, re_msg.msg);
             strncpy(re_msg.name, user->name, 20);
             send_all(&re_msg);
