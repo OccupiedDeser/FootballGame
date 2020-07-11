@@ -70,7 +70,7 @@ void do_work(struct User *user)
         {
             memset(&re_msg, 0, sizeof(re_msg));
             re_msg.type = CHAT_SYS;
-            strcpy(re_msg.msg, "私聊格式错误！\n");
+            strcpy(re_msg.msg, "私聊格式错误");
             send(user->fd, (void *)&re_msg, sizeof(re_msg), 0);
         }
         else
@@ -83,7 +83,7 @@ void do_work(struct User *user)
             {
                 msg.type = CHAT_SYS;
                 bzero(msg.msg, sizeof(msg.msg));
-                strcpy(msg.msg, "用户不存在或已下线！\n");
+                strcpy(msg.msg, "用户不存在或已下线");
                 send(user->fd, &msg, sizeof(msg), 0);
             }
         }
@@ -92,7 +92,7 @@ void do_work(struct User *user)
     {
         bzero(msg.msg, sizeof(msg.msg));
         msg.type = CHAT_SYS;
-        sprintf(msg.msg, "注意: " L_GREEN "%s" NONE " 已下线！\n", user->name);
+        sprintf(msg.msg, "注意: " L_GREEN "%s" NONE " 已下线！", user->name);
         strcpy(msg.name, user->name);
         send_all(&msg);
         if (user->team)

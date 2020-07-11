@@ -101,7 +101,7 @@ int main(int argc, char** argv)
                 struct ChatMsg login_msg;
                 bzero(&login_msg, sizeof(login_msg));
                 login_msg.type = CHAT_SYS;
-                sprintf(login_msg.msg, YELLOW" %s "NONE"已上线\n", user.name);
+                sprintf(login_msg.msg, YELLOW" %s "NONE"已上线", user.name);
                 send_all(&login_msg);
                 if (new_fd > 0) {
                     add_to_sub_reactor(&user);
