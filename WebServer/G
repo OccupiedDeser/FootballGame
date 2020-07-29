@@ -1,0 +1,1 @@
+gcc -o WebServer WebSocket_server.c  ../common/data.c ../common/base64.c ../common/common.c  ../common/sha1.c ../common/WebSocket.c ../common/ws_epoll.c ../common/ws_server.c ../common/ws_sub_reactor.c ../common/ws_thread_pool.c -lpthread -I ../common/ -D _D

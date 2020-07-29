@@ -1,0 +1,88 @@
+<!--
+ * @Author: Deser
+ * @e-Mail: yongk202@163.com
+ * @Date: 2020-07-26 Sun 19:59:41
+ * @LastEditors: Deser
+ * @LastEditTime: 2020-07-29 Wed 07:39:06
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket_Echo</title>
+  </head>
+  <body>
+    <!-- 显示结果 -->
+    <div></div>
+    <input type="text" placeholder="输入你的内容" />
+    <button id="button1">发送请求</button>
+    <button id="button2">断开连接</button>
+    <button id="button3">重新连接</button>
+
+    <script>
+      var input = document.querySelector("input");
+      var button1 = document.getElementById("button1");
+      var button2 = document.getElementById("button2");
+      var button3 = document.getElementById("button3");
+      var div = document.querySelector("div");
+      var name = prompt("输入你的名字：");
+
+      // var socket = new WebSocket('ws://echo.websocket.org/');
+      var socket = new WebSocket("ws://49.234.67.219:8888");
+      // var socket = new WebSocket("ws://localhost:8888");
+      socket.addEventListener("open", function () {
+        div.innerHTML = "连接成功";
+        socket.send(name);
+      });
+
+      // 发送消息
+      button1.addEventListener("click", function () {
+        var value = input.value;
+        socket.send(value);
+        input.value = "";
+      });
+
+      window.onload = function () {
+        document.onkeydown = function (ev) {
+          var event = ev || event;
+          if (event.keyCode == 13) {
+            var value = input.value;
+            socket.send(value);
+          }
+        };
+      };
+
+      // 接受数据
+      socket.addEventListener("message", function (e) {
+        console.log(e);
+        // div.innerHTML = e.data;
+        var divChild = document.createElement("div");
+        divChild.innerText = e.data;
+        div.appendChild(divChild);
+      });
+
+      // 主动断开
+      button2.addEventListener("click", function () {
+        socket.close();
+      });
+
+      //页面关闭，断开连接 
+      window.onbeforeunload = function () {
+        if(socket.readyState == socket.OPEN){
+          socket.close();
+        }
+      };
+
+      // 断开连接
+      socket.addEventListener("close", function () {
+        div.innerHTML = "服务器端开";
+      });      
+
+      // 重新连接（刷新页面）
+      button3.addEventListener("click", function () {
+        window.location.reload();
+      });
+    </script>
+  </body>
+</html>

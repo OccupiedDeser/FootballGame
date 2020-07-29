@@ -1,9 +1,10 @@
-/*************************************************************************
-	> File Name: head.h
-	> Author: suyelu 
-	> Mail: suyelu@126.com
-	> Created Time: Mon 06 Jul 2020 04:35:00 PM CST
- ************************************************************************/
+/**************************************************************** 
+    > Author: Deser
+    > e-Mail: yongk202@163.com
+    > Date: 2020-07-26 Sun 21:15:09
+    > LastEditors: Deser
+    > LastEditTime: 2020-07-29 Wed 07:07:51
+ ****************************************************************/
 
 #ifndef _HEAD_H
 #define _HEAD_H
@@ -41,7 +42,13 @@
 #include "datatype.h"
 #include "udp_server.h"
 #include "udp_client.h"
-#include "thread_pool.h"
-#include "sub_reactor.h"
+// #include "thread_pool.h"
+// #include "sub_reactor.h"
 #include "udp_epoll.h"
+#include "ws_epoll.h"
+#include "ws_server.h"
+#include "WebSocket.h"
+#include "ws_sub_reactor.h"
+#include "ws_thread_pool.h"
+
 #endif
