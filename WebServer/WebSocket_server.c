@@ -3,7 +3,7 @@
     > e-Mail: yongk202@163.com
     > Date: 2020-07-20 Mon 19:32:42
     > LastEditors: Deser
-    > LastEditTime: 2020-07-29 Wed 07:11:16
+    > LastEditTime: 2020-07-29 Wed 23:26:59
  ****************************************************************/
 #include "head.h"
 #define PORT 8888
@@ -21,7 +21,7 @@ void logout(int signum)
     struct ChatMsg msg;
     msg.type = CHAT_FIN;
     // send_all(&msg);
-    DBG(RED "\nBye Bye!\n");
+    DBG(RED "\nBye Bye!\n" NONE);
     for (int i = 0; i < MAX; i++) {
         if (bteam[i].online) {
             close(bteam[i].fd);
@@ -116,9 +116,11 @@ int main()
             char buff[512] = { 0 };
             if (events[i].data.fd == listener) {
                 int new_fd = ws_accept(listener, &user);
+                if(new_fd < 0){
+                    continue;
+                }
                 struct ChatMsg login_msg;
                 bzero(&login_msg, sizeof(login_msg));
-                login_msg.type = CHAT_SYS;
                 sprintf(login_msg.msg, "你的好友 %s 已上线，快打个招呼吧！\n", user.name);
                 ws_send_all(login_msg.msg, strlen(login_msg.msg));
                 if (new_fd > 0) {
