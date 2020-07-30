@@ -3,7 +3,7 @@
     > e-Mail: yongk202@163.com
     > Date: 2020-07-28 Tue 21:37:59
     > LastEditors: Deser
-    > LastEditTime: 2020-07-29 Wed 07:06:51
+    > LastEditTime: 2020-07-30 Thu 15:14:37
  ****************************************************************/
 
 #include "head.h"
@@ -67,8 +67,8 @@ int ws_accept(int fd, struct User* user)
         return -1;
     }
     namelen = ParsePack(request, name);
-    if (!namelen) {
-        printf("文本过长\n");
+    if (!namelen || namelen >= 20) {
+        printf("名字过长\n");
         close(new_fd);
         return -1;
     }

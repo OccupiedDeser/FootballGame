@@ -3,7 +3,7 @@
  * @e-Mail: yongk202@163.com
  * @Date: 2020-07-26 Sun 19:59:41
  * @LastEditors: Deser
- * @LastEditTime: 2020-07-29 Wed 07:39:06
+ * @LastEditTime: 2020-07-30 Thu 00:15:51
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -28,27 +28,59 @@
       var div = document.querySelector("div");
       var name = prompt("输入你的名字：");
 
+      //获得输入框中字符长度
+      function getLength(val) {
+        var str = new String(val);
+        var bytesCount = 0;
+        for (var i = 0, n = str.length; i < n; i++) {
+          var c = str.charCodeAt(i);
+          if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+            bytesCount += 1;
+          } else {
+            bytesCount += 2;
+          }
+        }
+        return bytesCount;
+      }
+
       // var socket = new WebSocket('ws://echo.websocket.org/');
       var socket = new WebSocket("ws://49.234.67.219:8888");
       // var socket = new WebSocket("ws://localhost:8888");
       socket.addEventListener("open", function () {
         div.innerHTML = "连接成功";
-        socket.send(name);
+        while (true) {
+          var namelen = getLength(name);
+          if (namelen < 20) {
+            socket.send(name);
+            break;
+          }
+          name = prompt("你的名字过长，请重新输入：");
+        }
       });
 
       // 发送消息
+      function sendMsg(val) {
+        var val = input.value;
+        var len = getLength(val);
+        if (len > 1000) {
+          alert("消息过长，超出限制!");
+        } else if (len == 0) {
+          alert("请输入您的消息");
+        } else {
+          socket.send(val);
+          input.value = "";
+        }
+      }
+
       button1.addEventListener("click", function () {
-        var value = input.value;
-        socket.send(value);
-        input.value = "";
+        sendMsg();
       });
 
       window.onload = function () {
         document.onkeydown = function (ev) {
           var event = ev || event;
           if (event.keyCode == 13) {
-            var value = input.value;
-            socket.send(value);
+            sendMsg();
           }
         };
       };
@@ -67,17 +99,17 @@
         socket.close();
       });
 
-      //页面关闭，断开连接 
+      //页面关闭，断开连接
       window.onbeforeunload = function () {
-        if(socket.readyState == socket.OPEN){
+        if (socket.readyState == socket.OPEN) {
           socket.close();
         }
       };
 
       // 断开连接
       socket.addEventListener("close", function () {
-        div.innerHTML = "服务器端开";
-      });      
+        div.innerHTML = "服务断开";
+      });
 
       // 重新连接（刷新页面）
       button3.addEventListener("click", function () {

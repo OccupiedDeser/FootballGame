@@ -3,7 +3,7 @@
     > e-Mail: yongk202@163.com
     > Date: 2020-07-20 Mon 19:32:42
     > LastEditors: Deser
-    > LastEditTime: 2020-07-29 Wed 23:26:59
+    > LastEditTime: 2020-07-30 Thu 15:30:25
  ****************************************************************/
 #include "head.h"
 #define PORT 8888
@@ -33,26 +33,25 @@ void logout(int signum)
     exit(0);
 }
 
-// int main(int argc, char **argv)
-int main()
+int main(int argc, char **argv)
 {
     int opt, listener, epollfd;
     pthread_t red_t, blue_t;
-    // while ((opt = getopt(argc, argv, "p:")) != -1)
-    // {
-    //     switch (opt)
-    //     {
-    //     case 'p':
-    //         port = atoi(optarg);
-    //         break;
-    //     default:
-    //         fprintf(stderr, "Usage : %s -p port\n", argv[0]);
-    //         exit(1);
-    //     }
-    // } //判断一配置文件合法性
+    while ((opt = getopt(argc, argv, "p:")) != -1)
+    {
+        switch (opt)
+        {
+        case 'p':
+            port = atoi(optarg);
+            break;
+        default:
+            fprintf(stderr, "Usage : %s -p port\n", argv[0]);
+            exit(1);
+        }
+    } //判断一配置文件合法性
 
-    // if (!port)
-    //     port = atoi(get_conf_value(conf, "PORT"));
+    if (!port)
+        port = atoi(get_conf_value(conf, "PORT"));
     // court.width = atoi(get_conf_value(conf, "COLS"));
     // court.height = atoi(get_conf_value(conf, "LINES"));
 
